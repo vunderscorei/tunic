@@ -26,8 +26,6 @@ def fix_mbox(data : str) -> str:
 
 
 def new_hyperlink(root_window : tk.Tk, text : str, url : str) -> tk.Label:
-    #underline_font : font.Font = font.Font(root, root.cget('font'))
-    #underline_font.configure(underline=True)
     label : tk.Label = tk.Label(master=root_window, text=text, fg=theme.hyperlink, cursor='hand2')
     ul_font : font.Font = font.Font(label, label.cget('font'))
     ul_font.configure(underline=True)
