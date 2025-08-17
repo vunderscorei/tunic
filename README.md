@@ -4,6 +4,10 @@ A cross-platform tool for downloading and converting Usenet MBOX files from the 
 
 Currently in development and not really ready for use.
 
+[__CLICK HERE TO DOWNLOAD__](https://github.com/vunderscorei/tunic/releases)
+
+---
+
 __BUILDING:__
 
 Requirements:
@@ -17,6 +21,7 @@ Process:
 - Run `python scripts/build.py` (or `python scripts\build.py` on Windows) to compile the project using pyinstaller.
 - The compiled executable will be in the `dist` directory. On Windows, this will be a folder called `TUNIC`, on macOS, a single file called `TUNIC.app`, and on Linux, a single file called `TUNIC`.
 
+---
 
 __KNOWN ISSUES:__
 - Light/Dark mode detect doesn't work correctly on Windows.
