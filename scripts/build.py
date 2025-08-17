@@ -52,18 +52,20 @@ def main():
     args.append('--clean')
     args.append('--name')
     args.append('TUNIC')
+    args.append('--windowed')
     if os == OS.MAC:
         args.append('--icon')
         args.append(str(ICON_MAC))
-        args.append('--windowed')
         args.append('--osx-bundle-identifier')
         args.append('dev.v-i.tunic')
         args.append('--target-architecture')
         args.append('universal2')
     else:
+        if os == OS.LINUX:
+            # causes program to be marked as a virus on windows, linux only for now
+            args.append('--one-file')
         args.append('--icon')
         args.append(str(ICON))
-        args.append('--onefile')
 
     pyinstall(args)
 

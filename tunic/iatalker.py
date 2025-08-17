@@ -17,7 +17,7 @@ class FileDownload(BytesIO):
         self.done = True
 
     def download(self) -> bool:
-        return self.file_ref.download(fileobj=self, verbose=True)
+        return self.file_ref.download(fileobj=self, verbose=False)
 
     def download_async(self) -> Thread:
         thread : Thread = Thread(target=self.download)
