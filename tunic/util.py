@@ -6,7 +6,7 @@ from os import path
 from pathlib import Path
 import sys
 
-VERSION_NUM = '0.0.1.0'
+VERSION_NUM = '0.0.1.0'  # make sure this lines up with the value in scripts/build.py
 PROJECT_ROOT = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
 
@@ -36,6 +36,7 @@ def get_os() -> OS:
 
 
 def get_resource(name) -> Path:
+    # this is slow, but allows macOS to work both bundled and as a folder of random files
     if get_os() == OS.MAC and (PROJECT_ROOT / 'Resources' / 'resources').exists():
         return PROJECT_ROOT / 'Resources' / 'resources' / name
     else:

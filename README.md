@@ -55,14 +55,15 @@ __FREQUENTLY ASKED QUESTIONS:__
 
 __KNOWN ISSUES:__
 - Light/Dark mode detect doesn't work correctly on Windows.
-- Many UI elements are unreadable in dark mode on macOS.
+- Many UI elements are not particularly distinct in dark mode on macOS.
 - The program provides no feedback if a download crashes, and will appear to be downloading forever.
 - The "finished" text can sometimes get garbled when it appears on Windows.
 - The app icon is awful.
 - Occasionally quitting the app on Windows leads to a zombie background task.
 - The entire UI is off-center and really ugly.
+- Hotkeys don't function correctly
+- The program doesn't correctly steal focus when launched on macOS
 - The tray icon on Windows is still a placeholder feather icon.
-- The menu bar on macOS is still filled with TkInter placeholder options.
 - No instructions on how to actually import the downloaded MBOX files into Thunderbird have been prepared.
 - Zero testing has been done on Linux.
 - Linux should support single-executable mode, but this has not been configured.

@@ -132,12 +132,12 @@ def cb_aboutbox() -> None:
 
 
 def menubar(root_window : tk.Tk) -> None:
-    is_mac : bool = util.get_os() == util.OS.MAC
+    # TODO: hotkeys still don't work right
     menu_root = tk.Menu(root_window)
 
     menu_file = tk.Menu(menu_root, tearoff=0)
     menu_help = tk.Menu(menu_root, tearoff=0)
-    if is_mac:
+    if util.get_os() == util.OS.MAC:
         root_window.createcommand('tkAboutDialog', cb_aboutbox)
         menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Cmd+Y')
         menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Cmd+S')
