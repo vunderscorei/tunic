@@ -17,7 +17,7 @@ def fix_mbox(data : str) -> str:
     return re.sub(r'\nDate: ([0-9]{4})/([0-9]{2})/([0-9]{2})\n', r'\nDate: \2-\3-\1\n', data)
 
 
-def new_hyperlink(root_window : tk.Tk, text: str, url : str) -> ttk.Label:
+def new_hyperlink(root_window : tk.Tk | tk.Toplevel, text: str, url : str) -> ttk.Label:
     label : ttk.Label = ttk.Label(master=root_window, text=text, foreground=theme.hyperlink, cursor='hand2')
     ul_font : font.Font = font.Font(label, label.cget('font'))
     ul_font.configure(underline=True)
@@ -73,6 +73,8 @@ sv_status : tk.StringVar = tk.StringVar()
 
 label_link : ttk.Label = new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
 
+img_icon : tk.PhotoImage = tk.PhotoImage(file=util.get_resource('tunic_logo.png'))
+
 
 def cb_allow_buttons(_read : str, _write : str, _unset : str) -> None:
     ng_size : int = len(sv_newsgroup.get())
@@ -121,7 +123,12 @@ def cb_download() -> None:
 
 def cb_aboutbox() -> None:
     # not used on macOS
-    print()
+    about_window = tk.Toplevel(root)
+    about_window.title('About TUNIC')
+    about_window.geometry('250x200')
+    ttk.Label(about_window, image=img_icon).pack(pady=10)
+    ttk.Label(about_window, text='TUNIC v' + util.VERSION_NUM).pack(pady=10)
+    new_hyperlink(root_window=about_window, text='Homepage', url='https://github.com/vunderscorei/tunic/').pack(pady=10)
 
 
 def menubar(root_window : tk.Tk) -> None:
@@ -131,6 +138,7 @@ def menubar(root_window : tk.Tk) -> None:
     menu_file = tk.Menu(menu_root, tearoff=0)
     menu_help = tk.Menu(menu_root, tearoff=0)
     if is_mac:
+        root_window.createcommand('tkAboutDialog', cb_aboutbox)
         menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Cmd+Y')
         menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Cmd+S')
         menu_file.add_command(label='Start Download', command=cb_download, accelerator='Cmd+D')
@@ -143,8 +151,7 @@ def menubar(root_window : tk.Tk) -> None:
         menu_file.add_separator()
         menu_file.add_command(label='Exit', command=lambda: exit(), accelerator='Ctrl+Q')
 
-        #todo: fix
-        menu_help.add_command(label='About TUNIC', command=None)
+        menu_help.add_command(label='About TUNIC', command=cb_aboutbox)
         menu_help.add_separator()
         menu_help.add_command(label='Documentation...', command=lambda: webbrowser.open_new_tab('https://github.com/vunderscorei/tunic'), accelerator='F1')
     menu_root.add_cascade(label='File', menu=menu_file)

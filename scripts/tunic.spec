@@ -7,6 +7,11 @@ from PyInstaller.building.osx import BUNDLE  # ignore any IDE warnings here
 from build import OS
 import build
 
+
+extra_files = [
+    (build.ICON_PNG, 'resources/')
+]
+
 platform : OS = build.get_os()
 if platform == OS.LINUX:
     icon = build.ICON
@@ -66,7 +71,7 @@ analysis = Analysis(
     build.PY_FILES,
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=extra_files,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

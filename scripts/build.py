@@ -7,7 +7,7 @@ import sys
 
 PROJECT_ROOT = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
-VERSION : tuple[int, int, int, int] = (1, 0, 0, 0)
+VERSION : tuple[int, int, int, int] = (0, 0, 1, 0)
 VERSION_STR : str = '%d.%d.%d.%d' % (VERSION[0], VERSION[1], VERSION[2], VERSION[3])
 
 PY_FILES : list[str] = [
@@ -19,9 +19,9 @@ PY_FILES : list[str] = [
 
 ICON = PROJECT_ROOT / 'resources' / 'tunic_logo.ico'
 ICON_MAC = PROJECT_ROOT / 'resources' / 'tunic_logo.icns'
+ICON_PNG = PROJECT_ROOT / 'resources' / 'tunic_logo.png'
 
 SPEC_FILE = PROJECT_ROOT / 'scripts' / 'tunic.spec'
-
 
 class OS(Enum):
     LINUX = enum.auto()

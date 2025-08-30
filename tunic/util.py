@@ -1,7 +1,13 @@
 import enum
+import os.path
 from enum import Enum
 import math
+from os import path
+from pathlib import Path
 import sys
+
+VERSION_NUM = '0.0.1.0'
+PROJECT_ROOT = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
 
 def friendly_size(size_bytes : int) -> str:
@@ -27,3 +33,10 @@ def get_os() -> OS:
             return OS.MAC
         case _:
             return OS.WINDOWS
+
+
+def get_resource(name) -> Path:
+    if get_os() == OS.MAC and (PROJECT_ROOT / 'Resources' / 'resources').exists():
+        return PROJECT_ROOT / 'Resources' / 'resources' / name
+    else:
+        return PROJECT_ROOT / 'resources' / name
