@@ -1,5 +1,4 @@
 # -*- mode: python -*-
-from sys import version_info
 
 from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
@@ -14,7 +13,7 @@ if platform == OS.LINUX:
     version = build2.VERSION_STR
 elif platform == OS.MAC:
     icon = build2.ICON_MAC
-    version = None
+    version = None  # set later via PLIST
 else:  # windows
     from PyInstaller.utils.win32.versioninfo import (
         VSVersionInfo,
@@ -115,7 +114,7 @@ if platform == OS.MAC:
     info_plist = {
         'NSUIElement': 1,
         'NSPrincipalClass': 'NSApplication',
-        'HSHighResulutionCapable': True,
+        'HSHighResolutionCapable': True,
         'CFBundleDisplayName': 'TUNIC',
         'CFBundleExecutable': 'TUNIC',
         'CFBundleIconFile': build2.ICON_MAC.name,
