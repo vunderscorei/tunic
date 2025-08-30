@@ -1,10 +1,10 @@
-import math
 from collections.abc import Callable
 import internetarchive as ia
+import math
 import re
 from threading import Thread
+from tkinter import filedialog, font, ttk
 import tkinter as tk
-from tkinter import filedialog, font
 import webbrowser
 from zipfile import ZipFile
 
@@ -25,8 +25,8 @@ def fix_mbox(data : str) -> str:
     return re.sub(r'\nDate: ([0-9]{4})/([0-9]{2})/([0-9]{2})\n', r'\nDate: \2-\3-\1\n', data)
 
 
-def new_hyperlink(root_window : tk.Tk, text : str, url : str) -> tk.Label:
-    label : tk.Label = tk.Label(master=root_window, text=text, fg=theme.hyperlink, cursor='hand2')
+def new_hyperlink(root_window : tk.Tk, text: str, url : str) -> ttk.Label:
+    label : ttk.Label = ttk.Label(master=root_window, text=text, foreground=theme.hyperlink, cursor='hand2')
     ul_font : font.Font = font.Font(label, label.cget('font'))
     ul_font.configure(underline=True)
     label.configure(font=ul_font)
@@ -34,7 +34,7 @@ def new_hyperlink(root_window : tk.Tk, text : str, url : str) -> tk.Label:
     return label
 
 
-def get_mbox(group : str, filepath : str, fix: Callable[[str], str] | None = None, progress_print : tk.StringVar | None = None) -> bool:
+def get_mbox(group : str, filepath : str, fix : Callable[[str], str] | None = None, progress_print : tk.StringVar | None = None) -> bool:
     if len(filepath) == 0:
         return False
     file_ref : ia.File = iatalker.get_file_ref(group)
@@ -66,20 +66,20 @@ def get_mbox(group : str, filepath : str, fix: Callable[[str], str] | None = Non
 root : tk.Tk = tk.Tk()
 
 sv_newsgroup : tk.StringVar = tk.StringVar()
-entry_newsgroup : tk.Entry = tk.Entry(root, textvariable=sv_newsgroup)
+entry_newsgroup : ttk.Entry = ttk.Entry(root, textvariable=sv_newsgroup)
 
-button_verify : tk.Button = tk.Button(root, text='Verify')
+button_verify : ttk.Button = ttk.Button(root, text='Verify')
 
 sv_filepath : tk.StringVar = tk.StringVar()
-entry_filepath : tk.Entry = tk.Entry(root, textvariable=sv_filepath)
+entry_filepath : ttk.Entry = ttk.Entry(root, textvariable=sv_filepath)
 
-button_filepick : tk.Button = tk.Button(root, text='Browse')
+button_filepick : ttk.Button = ttk.Button(root, text='Browse')
 
-button_download : tk.Button = tk.Button(root, text='Download', state=tk.DISABLED)
+button_download : ttk.Button = ttk.Button(root, text='Download', state=tk.DISABLED)
 
 sv_status : tk.StringVar = tk.StringVar()
 
-label_link : tk.Label = new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
+label_link : ttk.Label = new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
 
 
 def cb_allow_buttons(_read : str, _write : str, _unset : str) -> None:
@@ -127,10 +127,14 @@ def cb_download() -> None:
     Thread(target=t_download).start()
 
 
-root.wm_title('TUNIC: Thunderbird Usenet Newsgroup Import Converter')
+
+root.wm_title('TUNUC: Thunderbird Usenet Newsgroup Import Converter')
 root.wm_minsize(width=600, height=200)
 
-tk.Label(root, text='Newsgroup Name').grid(row=0, sticky=tk.E, pady=4)
+ttk.Label(root, text='Newsgroup Name').grid(row=0, sticky=tk.E, pady=4)
+
+#BEDUG
+print(ttk.Style(root).configure('lightcolor'))
 
 sv_newsgroup.trace_add(mode='write', callback=cb_allow_buttons)
 sv_newsgroup.set('rec.arts.anime')
@@ -140,7 +144,7 @@ entry_newsgroup.grid(row=0, column=1, ipadx=75)
 button_verify.configure(command=cb_verify_group)
 button_verify.grid(row=0, column=2, sticky=tk.W, pady=4)
 
-tk.Label(root, text='Output MBOX').grid(row=1, sticky=tk.E, pady=4)
+ttk.Label(root, text='Output MBOX').grid(row=1, sticky=tk.E, pady=4)
 
 sv_filepath.trace_add(mode='write', callback=cb_allow_buttons)
 
@@ -153,7 +157,7 @@ button_download.configure(command=cb_download)
 button_download.grid(row=2, column=1, pady=4)
 
 sv_status.set('')
-tk.Label(root, textvariable=sv_status).grid(row=3, columnspan=4)
+ttk.Label(root, textvariable=sv_status).grid(row=3, columnspan=4)
 
 label_link.grid(row=4, column=1)
 
