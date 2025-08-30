@@ -7,8 +7,8 @@ import sys
 
 PROJECT_ROOT = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
-VERSION : (str, str, str, str) = ('1', '0', '0', '0')
-VERSION_STR : str = '.'.join(VERSION)
+VERSION : tuple[int, int, int, int] = (1, 0, 0, 0)
+VERSION_STR : str = '%d.%d.%d.%d' % (VERSION[0], VERSION[1], VERSION[2], VERSION[3])
 
 PY_FILES : list[str] = [
     str(PROJECT_ROOT / 'tunic' / 'tunicui.py'),
