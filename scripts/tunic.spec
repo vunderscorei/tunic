@@ -5,11 +5,10 @@ from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
 
-from tunic import util
-from tunic.util import OS
+from build2 import OS
 import build2
 
-platform : OS = util.get_os()
+platform : OS = build2.get_os()
 if platform == OS.LINUX:
     icon = build2.ICON
     version = None

@@ -1,6 +1,9 @@
+import enum
+from enum import Enum
 from os import path
 from pathlib import Path
 import PyInstaller.__main__
+import sys
 
 PROJECT_ROOT = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
@@ -19,6 +22,21 @@ ICON_MAC = PROJECT_ROOT / 'resources' / 'tunic_logo.icns'
 
 SPEC_FILE = PROJECT_ROOT / 'scripts' / 'tunic.spec'
 
+
+class OS(Enum):
+    LINUX = enum.auto()
+    MAC = enum.auto()
+    WINDOWS = enum.auto()
+
+
+def get_os() -> OS:
+    match sys.platform:
+        case 'linux':
+            return OS.LINUX
+        case 'darwin':
+            return OS.MAC
+        case _:
+            return OS.WINDOWS
 
 def pyinstall(args : list[str]) -> None:
     PyInstaller.__main__.run(args)
