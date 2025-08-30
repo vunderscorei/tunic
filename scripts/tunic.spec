@@ -11,7 +11,7 @@ import build2
 platform : OS = build2.get_os()
 if platform == OS.LINUX:
     icon = build2.ICON
-    version = None
+    version = build2.VERSION_STR
 elif platform == OS.MAC:
     icon = build2.ICON_MAC
     version = None
@@ -27,7 +27,7 @@ else:  # windows
     )
 
     icon = build2.ICON
-    version_info = VSVersionInfo(
+    version = VSVersionInfo(
         ffi=FixedFileInfo(
             filevers=build2.VERSION,
             prodvers=build2.VERSION,
@@ -97,7 +97,7 @@ exe = EXE(
     entitlements_file=None,
     icon=[str(icon)],
     contents_directory='.',
-    version=version_info
+    version=version
 )
 
 coll = COLLECT(
