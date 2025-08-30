@@ -27,7 +27,7 @@ else:  # windows
     )
 
     icon = build2.ICON
-    version = VSVersionInfo(
+    version_info = VSVersionInfo(
         ffi=FixedFileInfo(
             filevers=build2.VERSION,
             prodvers=build2.VERSION,
