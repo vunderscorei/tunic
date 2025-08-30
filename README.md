@@ -1,3 +1,5 @@
+![TUNIC Logo, which is the word TUNIC in grey](./resources/tunic_logo.png)
+
 __TUNIC: The Thunderbird Usenet Newsgroup Import Converter__
 
 A cross-platform tool for downloading and converting Usenet MBOX files from the Internet Archive into something that can be read by Thunderbird.
