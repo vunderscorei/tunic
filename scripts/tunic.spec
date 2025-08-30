@@ -2,17 +2,17 @@
 
 from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
-from PyInstaller.building.osx import BUNDLE
+from PyInstaller.building.osx import BUNDLE  # ignore any IDE warnings here
 
-from build2 import OS
-import build2
+from build import OS
+import build
 
-platform : OS = build2.get_os()
+platform : OS = build.get_os()
 if platform == OS.LINUX:
-    icon = build2.ICON
-    version = build2.VERSION_STR
+    icon = build.ICON
+    version = build.VERSION_STR
 elif platform == OS.MAC:
-    icon = build2.ICON_MAC
+    icon = build.ICON_MAC
     version = None  # set later via PLIST
 else:  # windows
     from PyInstaller.utils.win32.versioninfo import (
@@ -25,11 +25,11 @@ else:  # windows
         VarStruct
     )
 
-    icon = build2.ICON
+    icon = build.ICON
     version = VSVersionInfo(
         ffi=FixedFileInfo(
-            filevers=build2.VERSION,
-            prodvers=build2.VERSION,
+            filevers=build.VERSION,
+            prodvers=build.VERSION,
             mask=0x3F,
             flags=0x0,
             OS=0x40004,
@@ -46,10 +46,10 @@ else:  # windows
                             StringStruct('CompanyName', 'v-i.dev'),
                             StringStruct('FileDescription', 'Thunderbird Usenet Newsgroup Import Converter'),
                             StringStruct('OriginalFilename', 'tunic.exe'),
-                            StringStruct('FileVersion', build2.VERSION_STR),
+                            StringStruct('FileVersion', build.VERSION_STR),
                             StringStruct('InternalName', 'tunic'),
-                            StringStruct('ProductName', 'TUNIC v' + build2.VERSION_STR),
-                            StringStruct('ProductVersion', build2.VERSION_STR)
+                            StringStruct('ProductName', 'TUNIC v' + build.VERSION_STR),
+                            StringStruct('ProductVersion', build.VERSION_STR)
                         ]
                     )
                 ]
@@ -63,7 +63,7 @@ else:  # windows
     )
 
 analysis = Analysis(
-    build2.PY_FILES,
+    build.PY_FILES,
     pathex=[],
     binaries=[],
     datas=[],
@@ -117,11 +117,11 @@ if platform == OS.MAC:
         'HSHighResolutionCapable': True,
         'CFBundleDisplayName': 'TUNIC',
         'CFBundleExecutable': 'TUNIC',
-        'CFBundleIconFile': build2.ICON_MAC.name,
+        'CFBundleIconFile': build.ICON_MAC.name,
         'CFBundleIdentifier': 'dev.v-i.tunic',
         'CFBundleInfoDictionaryVersion': '6.0',
         'CFBundlePackageType': 'APPL',
-        'CFBundleShortVersionString': build2.VERSION_STR,
+        'CFBundleShortVersionString': build.VERSION_STR,
     }
 
     app = BUNDLE(
