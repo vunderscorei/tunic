@@ -10,15 +10,7 @@ from zipfile import ZipFile
 
 import iatalker
 from theme import theme
-
-
-def friendly_size(size_bytes : int) -> str:
-    if size_bytes == 0:
-        return '0 B'
-    sizes : tuple[str, str, str, str, str] = ('B', 'KiB', 'MiB', 'GiB', 'TiB')
-    index : int = int(math.floor(math.log(size_bytes, 1_024)))
-    prefix : str = round(size_bytes / (1_204 ** index), 2)
-    return '%s %s' % (prefix, sizes[index])
+import util
 
 
 def fix_mbox(data : str) -> str:
@@ -99,7 +91,7 @@ def cb_verify_group() -> None:
     group : str = sv_newsgroup.get()
     file_ref : ia.File = iatalker.get_file_ref(group)
     if file_ref:
-        sv_status.set('Verified %s on the Internet Archive (%s).' % (group, friendly_size(int(file_ref.metadata['size']))))
+        sv_status.set('Verified %s on the Internet Archive (%s).' % (group, util.friendly_size(int(file_ref.metadata['size']))))
     else:
         sv_status.set('Could not find newsgroup %s on the Internet Archive.' % group)
 
@@ -127,9 +119,41 @@ def cb_download() -> None:
     Thread(target=t_download).start()
 
 
+def cb_aboutbox() -> None:
+    # not used on macOS
+    print()
+
+
+def menubar(root_window : tk.Tk) -> None:
+    is_mac : bool = util.get_os() == util.OS.MAC
+    menu_root = tk.Menu(root_window)
+
+    menu_file = tk.Menu(menu_root, tearoff=0)
+    menu_help = tk.Menu(menu_root, tearoff=0)
+    if is_mac:
+        menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Cmd+Y')
+        menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Cmd+S')
+        menu_file.add_command(label='Start Download', command=cb_download, accelerator='Cmd+D')
+
+        menu_help.add_command(label='Documentation...', command=lambda: webbrowser.open_new_tab('https://github.com/vunderscorei/tunic'), accelerator='Cmd+H')
+    else:
+        menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Ctrl+Y')
+        menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Ctrl+S')
+        menu_file.add_command(label='Start Download', command=cb_download, accelerator='Ctrl+D')
+        menu_file.add_separator()
+        menu_file.add_command(label='Exit', command=lambda: exit(), accelerator='Ctrl+Q')
+
+        #todo: fix
+        menu_help.add_command(label='About TUNIC', command=None)
+        menu_help.add_separator()
+        menu_help.add_command(label='Documentation...', command=lambda: webbrowser.open_new_tab('https://github.com/vunderscorei/tunic'), accelerator='F1')
+    menu_root.add_cascade(label='File', menu=menu_file)
+    menu_root.add_cascade(label='Help', menu=menu_help)
+    root_window.config(menu=menu_root)
 
 root.wm_title('TUNUC: Thunderbird Usenet Newsgroup Import Converter')
 root.wm_minsize(width=600, height=200)
+menubar(root_window=root)
 
 ttk.Label(root, text='Newsgroup Name').grid(row=0, sticky=tk.E, pady=4)
 
