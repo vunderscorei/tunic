@@ -133,9 +133,6 @@ root.wm_minsize(width=600, height=200)
 
 ttk.Label(root, text='Newsgroup Name').grid(row=0, sticky=tk.E, pady=4)
 
-#BEDUG
-print(ttk.Style(root).configure('lightcolor'))
-
 sv_newsgroup.trace_add(mode='write', callback=cb_allow_buttons)
 sv_newsgroup.set('rec.arts.anime')
 
