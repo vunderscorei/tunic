@@ -21,7 +21,7 @@ Process:
 - Clone the repository with `git clone https://github.com/vunderscorei/tunic.git`
 - Navigate to the project directory and run `pip install -r requirements.txt` to download the project dependencies.
 - Run `python scripts/build.py` (or `python scripts\build.py` on Windows) to compile the project using pyinstaller.
-- The compiled executable will be in the `dist` directory. On Windows, this will be a folder called `TUNIC`, on macOS, a single file called `TUNIC.app`, and on Linux, a single file called `TUNIC`.
+- The compiled executable will be in the `dist` directory. On Windows and Linux, this will be a folder called `TUNIC`, and on macOS, a single file called `TUNIC.app`.
 
 ---
 
@@ -65,3 +65,4 @@ __KNOWN ISSUES:__
 - The menu bar on macOS is still filled with TkInter placeholder options.
 - No instructions on how to actually import the downloaded MBOX files into Thunderbird have been prepared.
 - Zero testing has been done on Linux.
+- Linux should support single-executable mode, but this has not been configured.
