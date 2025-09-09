@@ -4,14 +4,14 @@ with open('README.md', 'r') as f:
     readme = f.read()
 
 setup(
-    name='tunic',
+    name='tunicOLD',
     version='0.1',
     description='Thunderbird Usenet Newsgroup Import Converter',
     license='GNU',
     long_description=readme,
     author='vi',
     author_email='mail@v-i.dev',
-    packages=['tunic'],
+    packages=['tunicOLD'],
     install_requires=['internetarchive', 'pyinstaller', 'darkdetect'],
     scripts=['scripts/build']
 )

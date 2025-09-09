@@ -50,9 +50,9 @@ else:  # windows
                         [
                             StringStruct('CompanyName', 'v-i.dev'),
                             StringStruct('FileDescription', 'Thunderbird Usenet Newsgroup Import Converter'),
-                            StringStruct('OriginalFilename', 'tunic.exe'),
+                            StringStruct('OriginalFilename', 'tunicOLD.exe'),
                             StringStruct('FileVersion', build.VERSION_STR),
-                            StringStruct('InternalName', 'tunic'),
+                            StringStruct('InternalName', 'tunicOLD'),
                             StringStruct('ProductName', 'TUNIC v' + build.VERSION_STR),
                             StringStruct('ProductVersion', build.VERSION_STR)
                         ]
@@ -123,7 +123,7 @@ if platform == OS.MAC:
         'CFBundleDisplayName': 'TUNIC',
         'CFBundleExecutable': 'TUNIC',
         'CFBundleIconFile': build.ICON_MAC.name,
-        'CFBundleIdentifier': 'dev.v-i.tunic',
+        'CFBundleIdentifier': 'dev.v-i.tunicOLD',
         'CFBundleInfoDictionaryVersion': '6.0',
         'CFBundlePackageType': 'APPL',
         'CFBundleShortVersionString': build.VERSION_STR,
@@ -133,6 +133,6 @@ if platform == OS.MAC:
         coll,
         name='TUNIC.app',
         icon=str(icon),
-        bundle_identifier='dev.v-i.tunic',
+        bundle_identifier='dev.v-i.tunicOLD',
         info_plist=info_plist
     )

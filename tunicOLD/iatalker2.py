@@ -1,23 +1,21 @@
 from io import BytesIO
 import json
 from threading import Thread
+from typing import override
 from urllib import request
 
+CHUNK_SIZE = 1_000_000
 
-def get_size(newsgroup : str) -> int:
+
+def get_size(newsgroup : str):
     root : str = newsgroup.split('.')[0]
     meta_url : str = 'https://archive.org/metadata/usenet-%s/files/%s.mbox.zip' % (root, newsgroup)
     with request.urlopen(meta_url) as resp:
-        body : dict = json.loads(resp.read())
+        body = json.loads(resp.read())
     if body and 'result' in body:
         return int(body['result']['size'])
     else:
         return -1
-
-
-def get_url(newsgroup : str) -> str:
-    root : str = newsgroup.split('.')[0]
-    return 'https://archive.org/download/usenet-%s/%s.mbox.zip' % (root, newsgroup)
 
 
 class FileDownload(BytesIO):
@@ -30,8 +28,7 @@ class FileDownload(BytesIO):
         self.current_size : int = 0
         self.done : bool = False
 
-
-    def download(self) -> bool:
+    def download(self, into : BytesIO) -> bool:
         if self.target_size == -1:
             self.done = True
             return False
@@ -41,17 +38,15 @@ class FileDownload(BytesIO):
                 buffer = resp.read(self.chunk_size)
                 if not buffer:
                     break
-                self.write(buffer)
+                into.write(buffer)
                 self.current_size += len(buffer)
             self.done = True
             return True
 
-
-    def download_async(self) -> Thread:
-        thread : Thread = Thread(target=self.download)
+    def download_async(self, into : BytesIO) -> Thread:
+        thread : Thread = Thread(target=lambda: self.download(into))
         thread.start()
         return thread
-
 
     def progress(self) -> float:
         if self.done:
@@ -60,3 +55,20 @@ class FileDownload(BytesIO):
             return 0.0
         else:
             return float(self.current_size) / float(self.target_size)
+
+
+
+NEWSGROUP = 'rec.arts.anime'
+size = get_size(NEWSGROUP)
+if size == -1:
+    print('ERROR: file not found')
+
+root = NEWSGROUP.split('.')[0]
+dl_url = 'https://archive.org/download/usenet-%s/%s.mbox.zip' % (root, NEWSGROUP)
+with FileDownload(url=dl_url, target_size=size) as fdl:
+    output = BytesIO()
+    thrd = fdl.download_async(output)
+    while not fdl.done:
+        print(fdl.progress())
+
+    thrd.join()
