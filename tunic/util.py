@@ -44,3 +44,4 @@ def get_resource(name : str) -> Path:
 
 def fix_mbox(data : str) -> str:
     return re.sub(r'\nDate: ([0-9]{4})/([0-9]{2})/([0-9]{2})\n', r'\nDate: \2-\3-\1\n', data)
+

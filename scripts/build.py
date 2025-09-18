@@ -11,7 +11,7 @@ VERSION : tuple[int, int, int, int] = (0, 0, 1, 0)  # make sure this lines up wi
 VERSION_STR : str = '%d.%d.%d.%d' % (VERSION[0], VERSION[1], VERSION[2], VERSION[3])
 
 PY_FILES : list[str] = [
-    str(PROJECT_ROOT / 'tunicOLD' / 'tunicui.py'),
+    str(PROJECT_ROOT / 'tunicOLD' / 'backend.py'),
     str(PROJECT_ROOT / 'tunicOLD' / 'iatalker.py'),
     str(PROJECT_ROOT / 'tunicOLD' / 'theme.py'),
     str(PROJECT_ROOT / 'tunicOLD' / 'util.py')

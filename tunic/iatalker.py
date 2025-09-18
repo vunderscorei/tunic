@@ -29,6 +29,7 @@ class FileDownload(BytesIO):
         self.chunk_size : int = chunk_size
         self.current_size : int = 0
         self.done : bool = False
+        self.stop_requested : bool = False
 
 
     def download(self) -> bool:
@@ -38,6 +39,13 @@ class FileDownload(BytesIO):
 
         with request.urlopen(self.url) as resp:
             while True:
+                if self.stop_requested:
+                    self.flush()
+                    self.done = False
+                    self.stop_requested = False
+                    self.chunk_size = 0
+                    return False
+
                 buffer = resp.read(self.chunk_size)
                 if not buffer:
                     break
