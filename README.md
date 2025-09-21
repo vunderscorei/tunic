@@ -62,7 +62,6 @@ __KNOWN ISSUES:__
 - The app icon is awful.
 - Occasionally quitting the app on Windows leads to a zombie background task.
 - The entire UI is off-center and really ugly.
-- The tray icon on Windows is still a placeholder feather icon.
 - No instructions on how to actually import the downloaded MBOX files into Thunderbird have been prepared.
 - Zero testing has been done on Linux.
 - Linux should support single-executable mode, but this has not been configured.

@@ -50,23 +50,28 @@ def _async_get_mbox(group_var: tk.StringVar, filepath_var: tk.StringVar, log_var
                     cancel_flag: tk.BooleanVar, callback: Callable[[], None] | None = None) -> None:
     log_var.set('Downloading...')
     group: str = group_var.get()
-    group_size: int = iatalker.get_size(group)
-    if group_size == -1:
-        log_var.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % group)
-        return callback() if callback else None
+    try:
+        group_size: int = iatalker.get_size(group)
+        if group_size == -1:
+            log_var.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % group)
+            return callback() if callback else None
 
-    if cancel_flag.get():
-        log_var.set('Download cancelled')
-        return callback() if callback else None
+        if cancel_flag.get():
+            log_var.set('Download cancelled')
+            return callback() if callback else None
 
-    url: str = iatalker.get_url(group_var.get())
-    data: BytesIO | None = iatalker.download(url=url, target_size=group_size, cancel_flag=cancel_flag, log_var=log_var)
+        url: str = iatalker.get_url(group_var.get())
+        data: BytesIO | None = iatalker.download(url=url, target_size=group_size, cancel_flag=cancel_flag,
+                                                 log_var=log_var)
 
-    if cancel_flag.get():
-        log_var.set('Download cancelled')
-        return callback() if callback else None
-    elif not data:
-        log_var.set('Could not download newsgroup')
+        if cancel_flag.get():
+            log_var.set('Download cancelled')
+            return callback() if callback else None
+        elif not data:
+            log_var.set('Could not download newsgroup')
+            return callback() if callback else None
+    except Exception as e:
+        log_var.set('ERROR: %s' % e)
         return callback() if callback else None
 
     log_var.set('Decompressing...')
