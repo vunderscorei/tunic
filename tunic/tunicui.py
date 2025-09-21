@@ -106,6 +106,10 @@ def cb_aboutbox() -> None:
     util.new_hyperlink(root=about, text='HomePage', url=util.HOMEPAGE).pack(pady=10)
 
 
+def cb_help() -> None:
+    webbrowser.open_new_tab(util.HOMEPAGE)
+
+
 menu_root: tk.Menu = tk.Menu(root)
 
 menu_file: tk.Menu = tk.Menu(menu_root, tearoff=0)
@@ -113,22 +117,30 @@ menu_help: tk.Menu = tk.Menu(menu_root, tearoff=0)
 if util.get_os() == util.OS.MAC:
     root.createcommand('tkAboutDialog', cb_aboutbox)
     menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Cmd+Y')
+    root.bind_all('<Command-y>', lambda _: cb_verify_group())
     menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Cmd+S')
+    root.bind_all('<Command-s>', lambda _: cb_select_file())
     menu_file.add_command(label='Start Download', command=cb_download, accelerator='Cmd+D')
+    root.bind_all('<Command-d>', lambda _: cb_download())
 
-    menu_help.add_command(label='Documentation...', command=lambda: webbrowser.open_new_tab(util.HOMEPAGE),
-                          accelerator='Cmd+H')
+    menu_help.add_command(label='Documentation...', command=cb_help, accelerator='Cmd+Shift+H')
+    root.bind_all('<Command-H>', lambda _: cb_help())
 else:
     menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Ctrl+Y')
+    root.bind_all('<Control-y>', lambda _: cb_verify_group())
     menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Ctrl+S')
+    root.bind_all('<Control-s>', lambda _: cb_select_file())
     menu_file.add_command(label='Start Download', command=cb_download, accelerator='Ctrl+D')
+    root.bind_all('<Control-d>', lambda _: cb_download())
     menu_file.add_separator()
-    menu_file.add_command(label='Exit', command=lambda: exit(), accelerator='Ctrl+Q')
+    menu_file.add_command(label='Exit', command=exit, accelerator='Ctrl+Q')
+    root.bind_all('<Control-q>', lambda _: exit())
 
     menu_help.add_command(label='About TUNIC', command=cb_aboutbox)
     menu_help.add_separator()
-    menu_help.add_command(label='Documentation...', command=lambda: webbrowser.open_new_tab(util.HOMEPAGE),
+    menu_help.add_command(label='Documentation...', command=cb_help,
                           accelerator='F1')
+    root.bind_all('<F1>', lambda _: cb_help())
 menu_root.add_cascade(label='File', menu=menu_file)
 menu_root.add_cascade(label='Help', menu=menu_help)
 root.config(menu=menu_root)
@@ -144,6 +156,7 @@ def main() -> None:
     root.focus()
     if util.get_os() == util.OS.MAC:
         # fix for annoying bug where app starts unfocused
+        # todo this still does work
         root.after(100, pop, [])
     root.mainloop()
 
