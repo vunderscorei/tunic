@@ -43,6 +43,8 @@ def get_resource(name: str) -> Path:
     # this is slow, but allows macOS to work both bundled and as a folder of random files
     if get_os() == OS.MAC and (PROJECT_ROOT / 'Resources' / 'resources').exists():
         return PROJECT_ROOT / 'Resources' / 'resources' / name
+    elif (PROJECT_ROOT / 'TUNIC' / 'resources' / name).exists():
+        return PROJECT_ROOT / 'TUNIC' / 'resources' / name
     else:
         return PROJECT_ROOT / 'resources' / name
 

@@ -21,6 +21,8 @@ ICON = PROJECT_ROOT / 'resources' / 'tunic_logo.ico'
 ICON_MAC = PROJECT_ROOT / 'resources' / 'tunic_logo.icns'
 ICON_PNG = PROJECT_ROOT / 'resources' / 'tunic_logo.png'
 
+print('DEBUG:icon=' + str(ICON))
+
 SPEC_FILE = PROJECT_ROOT / 'scripts' / 'tunic.spec'
 
 class OS(Enum):

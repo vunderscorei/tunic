@@ -1,4 +1,5 @@
 import json
+import ssl
 import tkinter as tk
 from io import BytesIO
 from urllib import request
@@ -7,7 +8,7 @@ from urllib import request
 def get_size(newsgroup: str) -> int:
     root: str = newsgroup.split('.')[0]
     meta_url: str = 'https://archive.org/metadata/usenet-%s/files/%s.mbox.zip' % (root, newsgroup)
-    with request.urlopen(meta_url) as resp:
+    with request.urlopen(meta_url, context=ssl.SSLContext()) as resp:
         body: dict = json.loads(resp.read())
     if body and 'result' in body:
         return int(body['result']['size'])
@@ -34,7 +35,7 @@ def download(url: str, target_size: int, cancel_flag: tk.BooleanVar, log_var: tk
     data: BytesIO = BytesIO()
     current_size: int = 0
     # todo: handle error codes
-    with request.urlopen(url) as resp:
+    with request.urlopen(url, context=ssl.SSLContext()) as resp:
         while True:
             if cancel_flag.get():
                 return None
