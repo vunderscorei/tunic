@@ -1,21 +1,17 @@
 import enum
-from enum import Enum
 import math
-from os import path
-from pathlib import Path
 import re
 import sys
+import tkinter as tk
+import webbrowser
+from enum import Enum
+from os import path
+from pathlib import Path
+from tkinter import font, ttk
 
-VERSION_NUM : str = '0.0.1.0'
-PROJECT_ROOT : Path = Path(path.dirname(path.dirname(path.realpath(__file__))))
-
-def friendly_size(size_bytes : int) -> str:
-    if size_bytes == 0:
-        return '0 B'
-    sizes : tuple[str, str, str, str, str] = ('B', 'KiB', 'MiB', 'GiB', 'TiB')
-    index : int = int(math.floor(math.log(size_bytes, 1_024)))
-    prefix : str = round(size_bytes / (1_024 ** index), 2)
-    return '%s %s' % (prefix, sizes[index])
+VERSION_NUM: str = '0.0.1.0'
+HOMEPAGE = 'https://github.com/vunderscorei/tunic'
+PROJECT_ROOT: Path = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
 
 class OS(Enum):
@@ -34,7 +30,16 @@ def get_os() -> OS:
             return OS.WINDOWS
 
 
-def get_resource(name : str) -> Path:
+def friendly_size(size_bytes: int) -> str:
+    if size_bytes == 0:
+        return '0 B'
+    sizes: tuple[str, str, str, str, str] = ('B', 'KiB', 'MiB', 'GiB', 'TiB')
+    index: int = int(math.floor(math.log(size_bytes, 1_024)))
+    prefix: str = round(size_bytes / (1_024 ** index), 2)
+    return '%s %s' % (prefix, sizes[index])
+
+
+def get_resource(name: str) -> Path:
     # this is slow, but allows macOS to work both bundled and as a folder of random files
     if get_os() == OS.MAC and (PROJECT_ROOT / 'Resources' / 'resources').exists():
         return PROJECT_ROOT / 'Resources' / 'resources' / name
@@ -42,6 +47,18 @@ def get_resource(name : str) -> Path:
         return PROJECT_ROOT / 'resources' / name
 
 
-def fix_mbox(data : str) -> str:
+def fix_mbox(data: str) -> str:
     return re.sub(r'\nDate: ([0-9]{4})/([0-9]{2})/([0-9]{2})\n', r'\nDate: \2-\3-\1\n', data)
 
+
+def set_underline(label: ttk.Label, underline: bool = True) -> None:
+    lbl_font: font.Font = font.Font(label, label.cget('font'))
+    lbl_font.configure(underline=underline)
+    label.configure(font=lbl_font)
+
+
+def new_hyperlink(root: tk.Tk | tk.Toplevel, text: str, url: str) -> ttk.Label:
+    label: ttk.Label = ttk.Label(master=root, text=text, foreground='blue', cursor='hand2')
+    set_underline(label=label, underline=True)
+    label.bind('<Button-1>', lambda _: webbrowser.open_new_tab(url))
+    return label

@@ -1,166 +1,114 @@
+import os.path
+import tkinter as tk
 from collections.abc import Callable
 from io import BytesIO
 from threading import Thread
-import json
-from tkinter import filedialog, font, ttk
-import tkinter as tk
-from urllib import request
-import webbrowser
+from tkinter import filedialog, ttk
 from zipfile import ZipFile
 
 import iatalker
 import util
 
-PAD_Y : int | tuple[int, int] = 4
-PAD_X : int | tuple[int, int] = (10, 0)
-IPAD_X : int = 75
 
-def set_underline(label : ttk.Label, underline : bool = True):
-    lbl_font : font.Font = font.Font(label, label.cget('font'))
-    lbl_font.configure(underline=underline)
-    label.configure(font=lbl_font)
-
-
-def new_hyperlink(root : tk.Tk | tk.Toplevel, text : str, url : str) -> ttk.Label:
-    label : ttk.Label = ttk.Label(master=root, text=text, foreground='blue', cursor='hand2')
-    set_underline(label=label, underline=True)
-    label.bind('<Button-1>', lambda _: webbrowser.open_new_tab(url))
-    return label
-
-
-def get_size(newsgroup : str) -> int:
-    root : str = newsgroup.split('.')[0]
-    meta_url : str = 'https://archive.org/metadata/usenet-%s/files/%s.mbox.zip' % (root, newsgroup)
-    with request.urlopen(meta_url) as resp:
-        body : dict = json.loads(resp.read())
-    if body and 'result' in body:
-        return int(body['result']['size'])
+def build_cb_verify_group(group_var: tk.StringVar, log_var: tk.StringVar) -> None:
+    group: str = group_var.get()
+    file_size: int = iatalker.get_size(group)
+    if file_size > -1:
+        log_var.set('Verified %s on the Internet Archive (%s).' % (group, util.friendly_size(file_size)))
     else:
-        return -1
+        log_var.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % group)
 
 
-def get_url(newsgroup : str) -> str:
-    root : str = newsgroup.split('.')[0]
-    return 'https://archive.org/download/usenet-%s/%s.mbox.zip' % (root, newsgroup)
+def build_cb_select_file(group_var: tk.StringVar, filepath_var: tk.StringVar) -> None:
+    group: str = group_var.get()
+    default_name: str | None = '%s.mbox' % group if group else None
+    filename: str = filedialog.asksaveasfilename(defaultextension='.mbox',
+                                                 filetypes=[('MBOX', '*.mbox'), ('All Files', '*.*')],
+                                                 initialfile=default_name)
+    if filename:
+        filepath_var.set(filename)
 
 
-class MboxDownload(BytesIO):
-
-    def __init__(self, group : str, filepath : str, progress_print : tk.StringVar, fix : bool, chunk_size : int = 1_000_000) -> None:
-        super().__init__()
-        self.group : str = group
-        self.filepath : str = filepath
-        self.progress_print : tk.StringVar = progress_print
-        self.fix : bool = fix
-        self.chunk_size : int = chunk_size
-        self._current_size : int = 0
-        self._done : bool = False
-        self._success : bool = False
-        self._stop_requested : bool = False
-        self.thread : Thread | None = None
-
-
-    def _download(self) -> bool:
-        if len(self.group) == 0:
-            self.progress_print.set('ERROR: No newsgroup given.')
-            if self.after:
-                self.after()
-            return False
-        elif len(self.filepath) == 0:
-            self.progress_print.set('ERROR: No filepath given.')
-            if self.after:
-                self.after()
-            return False
-
-        size : int = iatalker.get_size(self.group)
-        if size == -1:
-            self.progress_print.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % self.group)
-            if self.after:
-                self.after()
-            return False
-
-        mbox_url : str = iatalker.get_url(self.group)
-        with request.urlopen(mbox_url) as resp:
-            while True:
-                if self._stop_requested:
-                    self._done = True
-                    if self.after:
-                        self.after()
-                    return False
-
-                buffer : bytes | None = resp.read(self.chunk_size)
-                if not buffer:
-                    break
-                self.write(buffer)
-                self._current_size += len(buffer)
-                self.progress_print.set('Downloading... (%d%%)' % (self._current_size * 100.0))
-            self.progress_print.set('Decompressing...')
-
-            with ZipFile(self) as z:
-                data : str = z.read(self.group + '.mbox').decode(encoding='utf-8')
-                with open(self.filepath, 'w', encoding='utf-8') as mbox:
-                    if self.fix:
-                        self.progress_print.set('Fixing...')
-                        mbox.write(util.fix_mbox(data))
-                    else:
-                        mbox.write(data)
-                self.progress_print.set('Done.')
-                self._done = True
-                self._success = True
-                if self.after:
-                    self.after()
-                return True
-
-    def download_async(self) -> Thread:
-        self.thread = Thread(target=self._download)
-        self.thread.start()
-        return self.thread
-
-    def join(self, timeout : float | None = None) -> None:
-        if self.thread:
-            self.thread.join(timeout=timeout)
-
-    def stop(self) -> Thread | None:
-        self._stop_requested = True
-        return self.thread
-
-    def is_done(self) -> bool:
-        return self._done
-
-    def is_success(self) -> bool:
-        return self._success
-
-
-
-def download_mbox(group : str, filepath : str,  progress_print : tk.StringVar, fix : Callable[[str], str] | None = None) -> bool:
-    if len(group) == 0:
-        progress_print.set('ERROR: No newsgroup given.')
-        return False
-    elif len(filepath) == 0:
-        progress_print.set('ERROR: No filepath given.')
-        return False
-
-    size = iatalker.get_size(group)
-    if size == -1:
-        progress_print.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % group)
-
-    mbox_url : str = iatalker.get_url(group)
-    fdl : iatalker.FileDownload = iatalker.FileDownload(url=mbox_url, target_size=size)
-    fdl.download_async()
-    while not fdl.done:
-        percent = int(fdl.progress() * 100.0)
-        progress_print.set('Downloading... (%d%%)' % percent)
-
-    progress_print.set('Decompressing...')
-
-    with ZipFile(fdl) as z:
-        data : str = z.read(group + '.mbox').decode(encoding='utf-8')
-        with open(filepath, 'w', encoding='utf-8') as mbox:
-            if fix:
-                progress_print.set('Fixing...')
-                mbox.write(fix(data))
+# StringVar traces require a very specific type of callback
+def build_cb_allow_buttons(group_var: tk.StringVar, filepath_var: tk.StringVar, verify: ttk.Button,
+                           download: ttk.Button) -> Callable[[str, str, str], None]:
+    def cb_allow_buttons(_read: str, _write: str, _unset: str) -> None:
+        ng_size: int = len(group_var.get())
+        if ng_size > 0:
+            verify.configure(state=tk.ACTIVE)
+            if len(filepath_var.get()) > 0:
+                download.configure(state=tk.ACTIVE)
             else:
-                mbox.write(data)
+                download.configure(state=tk.DISABLED)
+        else:
+            verify.configure(state=tk.DISABLED)
 
-            progress_print.set('Done.')
-            return True
+    return cb_allow_buttons
+
+
+def _async_get_mbox(group_var: tk.StringVar, filepath_var: tk.StringVar, log_var: tk.StringVar, fix_flag: tk.BooleanVar,
+                    cancel_flag: tk.BooleanVar, callback: Callable[[], None] | None = None) -> None:
+    log_var.set('Downloading...')
+    group: str = group_var.get()
+    group_size: int = iatalker.get_size(group)
+    if group_size == -1:
+        log_var.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % group)
+        return callback() if callback else None
+
+    if cancel_flag.get():
+        log_var.set('Download cancelled')
+        return callback() if callback else None
+
+    url: str = iatalker.get_url(group_var.get())
+    data: BytesIO | None = iatalker.download(url=url, target_size=group_size, cancel_flag=cancel_flag, log_var=log_var)
+
+    if cancel_flag.get():
+        log_var.set('Download cancelled')
+        return callback() if callback else None
+    elif not data:
+        log_var.set('Could not download newsgroup')
+        return callback() if callback else None
+
+    log_var.set('Decompressing...')
+    filepath: str = filepath_var.get()
+    with ZipFile(data) as z:
+        mbox: str = z.read(group + '.mbox').decode(encoding='utf-8')
+        with open(filepath, 'w', encoding='utf-8') as file:
+            if fix_flag.get():
+                log_var.set('Fixing...')
+                file.write(util.fix_mbox(mbox))
+            else:
+                file.write(mbox)
+
+    if cancel_flag.get():
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        log_var.set('Download cancelled')
+        return callback() if callback else None
+
+    log_var.set('Done.')
+    return callback() if callback else None
+
+
+def build_cb_download(group_var: tk.StringVar, filepath_var: tk.StringVar, log_var: tk.StringVar,
+                      fix_flag: tk.BooleanVar, cancel_flag: tk.BooleanVar, download_btn_text_var: tk.StringVar,
+                      disable_while_dl: list[ttk.Button | ttk.Entry | ttk.Checkbutton] | None) -> None:
+    if download_btn_text_var.get() == 'Download':
+        def cb_download_cb() -> None:
+            if disable_while_dl:
+                for i in disable_while_dl:
+                    i.configure(state=tk.ACTIVE)
+            download_btn_text_var.set('Download')
+            cancel_flag.set(False)
+
+        if disable_while_dl:
+            for item in disable_while_dl:
+                item.configure(state=tk.DISABLED)
+
+        download_btn_text_var.set('Cancel')
+
+        Thread(target=lambda: _async_get_mbox(group_var=group_var, filepath_var=filepath_var, log_var=log_var,
+                                              fix_flag=fix_flag, cancel_flag=cancel_flag,
+                                              callback=cb_download_cb)).start()
+    else:  # cancel
+        cancel_flag.set(True)

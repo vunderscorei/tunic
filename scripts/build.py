@@ -7,21 +7,21 @@ import sys
 
 PROJECT_ROOT = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
-VERSION : tuple[int, int, int, int] = (0, 0, 1, 0)  # make sure this lines up with the value in tunicOLD/util.py
+VERSION : tuple[int, int, int, int] = (0, 0, 1, 0)  # make sure this lines up with the value in tunic/util.py
 VERSION_STR : str = '%d.%d.%d.%d' % (VERSION[0], VERSION[1], VERSION[2], VERSION[3])
 
 PY_FILES : list[str] = [
-    str(PROJECT_ROOT / 'tunicOLD' / 'backend.py'),
-    str(PROJECT_ROOT / 'tunicOLD' / 'iatalker.py'),
-    str(PROJECT_ROOT / 'tunicOLD' / 'theme.py'),
-    str(PROJECT_ROOT / 'tunicOLD' / 'util.py')
+    str(PROJECT_ROOT / 'tunic' / 'backend.py'),
+    str(PROJECT_ROOT / 'tunic' / 'iatalker.py'),
+    str(PROJECT_ROOT / 'tunic' / 'theme.py'),
+    str(PROJECT_ROOT / 'tunic' / 'util.py')
 ]
 
 ICON = PROJECT_ROOT / 'resources' / 'tunic_logo.ico'
 ICON_MAC = PROJECT_ROOT / 'resources' / 'tunic_logo.icns'
 ICON_PNG = PROJECT_ROOT / 'resources' / 'tunic_logo.png'
 
-SPEC_FILE = PROJECT_ROOT / 'scripts' / 'tunicOLD.spec'
+SPEC_FILE = PROJECT_ROOT / 'scripts' / 'tunic.spec'
 
 class OS(Enum):
     LINUX = enum.auto()
@@ -37,6 +37,7 @@ def get_os() -> OS:
             return OS.MAC
         case _:
             return OS.WINDOWS
+
 
 def pyinstall(args : list[str]) -> None:
     PyInstaller.__main__.run(args)
