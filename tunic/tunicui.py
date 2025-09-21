@@ -59,6 +59,9 @@ cb_download: Callable[[], None] = lambda: backend.build_cb_download(group_var=sv
                                                                                       chk_fix_dates])
 
 # placement
+if util.get_os != util.OS.MAC:
+    root.iconbitmap(util.get_resource('tunic_logo.ico'))
+
 root.wm_title('TUNIC: Thunderbird Usenet Newsgroup Import Converter')
 root.wm_minsize(width=600, height=200)
 
@@ -133,7 +136,7 @@ else:
     menu_file.add_command(label='Start Download', command=cb_download, accelerator='Ctrl+D')
     root.bind_all('<Control-d>', lambda _: cb_download())
     menu_file.add_separator()
-    menu_file.add_command(label='Exit', command=exit, accelerator='Ctrl+Q')
+    menu_file.add_command(label='Exit', command=lambda: exit(), accelerator='Ctrl+Q')
     root.bind_all('<Control-q>', lambda _: exit())
 
     menu_help.add_command(label='About TUNIC', command=cb_aboutbox)

@@ -9,6 +9,7 @@ import build
 
 
 extra_files = [
+    (build.ICON, 'resources/'),
     (build.ICON_PNG, 'resources/')
 ]
 
