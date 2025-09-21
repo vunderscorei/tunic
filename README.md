@@ -4,7 +4,7 @@ __TUNIC: The Thunderbird Usenet Newsgroup Import Converter__
 
 A cross-platform tool for downloading and converting Usenet MBOX files from the Internet Archive into something that can be read by Thunderbird.
 
-Currently in development and not really ready for use.
+Currently in development, and may be buggy.
 
 [__CLICK HERE TO DOWNLOAD__](https://github.com/vunderscorei/tunic/releases)
 
