@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='tunic',
-    version='0.0.1',
+    version='0.1.0',
     description='Thunderbird Usenet Newsgroup Import Converter',
     license='GNU',
     long_description=readme,

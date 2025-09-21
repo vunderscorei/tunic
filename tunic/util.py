@@ -9,7 +9,7 @@ from os import path
 from pathlib import Path
 from tkinter import font, ttk
 
-VERSION_NUM: str = '0.0.1.0'
+VERSION_NUM: str = '0.1.0.0'
 HOMEPAGE = 'https://github.com/vunderscorei/tunic'
 PROJECT_ROOT: Path = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
