@@ -14,7 +14,7 @@ def build_cb_verify_group(group_var: tk.StringVar, log_var: tk.StringVar) -> Non
     group: str = group_var.get()
     file_size: int = iatalker.get_size(group)
     if file_size > -1:
-        log_var.set('Verified %s on the Internet Archive (%s).' % (group, util.friendly_size(file_size)))
+        log_var.set('Verified %s on the Internet Archive (%s compressed).' % (group, util.friendly_size(file_size)))
     else:
         log_var.set('ERROR: Could not find newsgroup %s on the Internet Archive.' % group)
 
