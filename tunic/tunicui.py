@@ -146,18 +146,8 @@ menu_root.add_cascade(label='Help', menu=menu_help)
 root.config(menu=menu_root)
 
 
-def pop(_) -> None:
-    root.attributes('-topmost', True)
-    root.update()
-    root.attributes('-topmost', False)
-
-
 def main() -> None:
-    root.focus()
-    if util.get_os() == util.OS.MAC:
-        # fix for annoying bug where app starts unfocused
-        # todo this still does work
-        root.after(100, pop, [])
+    root.focus_force()
     root.mainloop()
 
 
