@@ -19,6 +19,7 @@ Requirements:
 
 Process:
 - Clone the repository with `git clone https://github.com/vunderscorei/tunic.git`
+- (Optional) [configure a virtual environment](https://docs.python.org/3/library/venv.html) for building inside of.
 - Navigate to the project directory and run `pip install -r requirements.txt` to download the project dependencies.
 - Run `python scripts/build.py` (or `python scripts\build.py` on Windows) to compile the project using pyinstaller.
 - The compiled executable will be in the `dist` directory. On Windows and Linux, this will be a folder called `TUNIC`, and on macOS, a single file called `TUNIC.app`.
