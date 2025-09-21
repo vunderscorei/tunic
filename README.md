@@ -10,6 +10,8 @@ Currently in development, and may be buggy.
 
 [__CLICK HERE FOR USAGE INSTRUCTIONS__](https://github.com/vunderscorei/tunic/wiki/Setting-up-Thunderbird)
 
+developed by [vi](https://v-i.dev/)
+
 ---
 
 __BUILDING:__
