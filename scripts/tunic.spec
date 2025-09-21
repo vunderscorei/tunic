@@ -4,16 +4,15 @@ from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE  # ignore any IDE warnings here
 
-from build import OS
 import build
-
+from build import OS
 
 extra_files = [
     (build.ICON, 'resources/'),
     (build.ICON_PNG, 'resources/')
 ]
 
-platform : OS = build.get_os()
+platform: OS = build.get_os()
 if platform == OS.LINUX:
     icon = build.ICON
     version = build.VERSION_STR
@@ -114,7 +113,6 @@ coll = COLLECT(
     upx_exclude=[],
     name='TUNIC'
 )
-
 
 if platform == OS.MAC:
     info_plist = {

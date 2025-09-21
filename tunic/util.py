@@ -13,6 +13,10 @@ VERSION_NUM: str = '0.1.0.0'
 HOMEPAGE = 'https://github.com/vunderscorei/tunic'
 PROJECT_ROOT: Path = Path(path.dirname(path.dirname(path.realpath(__file__))))
 
+RESOURCE_ROOT = PROJECT_ROOT / 'TUNIC' / 'resources'
+RESOURCE_ROOT_MAC = PROJECT_ROOT / 'Resources' / 'resources'
+RESOURCE_ROOT_LOOSE = PROJECT_ROOT / 'resources'
+
 
 class OS(Enum):
     LINUX = enum.auto()
@@ -41,12 +45,16 @@ def friendly_size(size_bytes: int) -> str:
 
 def get_resource(name: str) -> Path:
     # this is slow, but allows macOS to work both bundled and as a folder of random files
-    if get_os() == OS.MAC and (PROJECT_ROOT / 'Resources' / 'resources').exists():
-        return PROJECT_ROOT / 'Resources' / 'resources' / name
-    elif (PROJECT_ROOT / 'TUNIC' / 'resources' / name).exists():
-        return PROJECT_ROOT / 'TUNIC' / 'resources' / name
+    if get_os() == OS.MAC:
+        if (RESOURCE_ROOT_MAC / name).exists():
+            return RESOURCE_ROOT_MAC / name
+        else:
+            return RESOURCE_ROOT_LOOSE / name
     else:
-        return PROJECT_ROOT / 'resources' / name
+        if (RESOURCE_ROOT / name).exists():
+            return RESOURCE_ROOT / name
+        else:
+            return RESOURCE_ROOT_LOOSE / name
 
 
 def fix_mbox(data: str) -> str:
