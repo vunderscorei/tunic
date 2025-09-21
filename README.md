@@ -62,6 +62,8 @@ __FREQUENTLY ASKED QUESTIONS:__
 - ***How complete are the Usenet archives used by TUNIC? Does it pull from Google Groups?***
     - Due to the exact way in which Usenet is distributed, it is impossible to tell the exact number of posts that have been made, especially in the earlier years. TUNIC relies entirely upon the [Usenet Historical Collection](https://archive.org/details/usenethistorical), a massive dump given to the Internet Archive which does include anything newer than late 2013. It appears to go as far back as 1984 or 1985, but early archiving seems spotty. Google Groups, one of the only other large-scale historic Usenet archives, has significantly more posts from these early years, but are unfortunately not used by TUNIC. The Usenet archive section of Google Groups has been languishing for more than a decade, and the API to interface with it is completely broken. There have been some attempts to scape posts from it, but those are beyond the scope of TUNIC, which has the goal of just reading wha has already been collected.
 
+---
+
 __FUTURE GOALS:__
 - Browsable list of downloadable newsgroups
 - Bulk download of multiple groups
