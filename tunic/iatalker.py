@@ -1,42 +1,49 @@
-import internetarchive as ia
+import json
+import ssl
+import tkinter as tk
 from io import BytesIO
-from threading import Thread
-from typing import override
+from urllib import request
 
 
-class FileDownload(BytesIO):
-
-    def __init__(self, file_ref : ia.File) -> None:
-        super().__init__()
-        self.file_ref : ia.File = file_ref
-        self.target_size : int = int(file_ref.metadata['size'])
-        self.done : bool = False
-
-    @override
-    def close(self) -> None:
-        self.done = True
-
-    def download(self) -> bool:
-        return self.file_ref.download(fileobj=self, verbose=False)
-
-    def download_async(self) -> Thread:
-        thread : Thread = Thread(target=self.download)
-        thread.start()
-        return thread
-
-    def progress(self) -> float:
-        return float(len(self.getvalue())) / self.target_size
-
-    def actually_close(self) -> None:
-        super().close()
+def get_size(newsgroup: str) -> int:
+    root: str = newsgroup.split('.')[0]
+    meta_url: str = 'https://archive.org/metadata/usenet-%s/files/%s.mbox.zip' % (root, newsgroup)
+    with request.urlopen(meta_url, context=ssl.SSLContext()) as resp:
+        body: dict = json.loads(resp.read())
+    if body and 'result' in body:
+        return int(body['result']['size'])
+    else:
+        return -1
 
 
-def get_file_ref(group : str) -> ia.File | None:
-    if len(group) == 0:
-        return None
-    root : str = group.split('.', 1)[0]
-    item : ia.Item = ia.get_item(identifier='usenet-' + root)
-    if not item.item_metadata:
-        return None
-    file : ia.File = ia.File(item=item, name=group + '.mbox.zip')
-    return file if file.metadata else None
+def get_url(newsgroup: str) -> str:
+    root: str = newsgroup.split('.')[0]
+    return 'https://archive.org/download/usenet-%s/%s.mbox.zip' % (root, newsgroup)
+
+
+def percent_done(current_size: int, total_size: int) -> int:
+    if current_size == 0:
+        return 0
+    elif current_size >= total_size:
+        return 100
+    else:
+        return int(100.0 * (float(current_size) / float(total_size)))
+
+
+def download(url: str, target_size: int, cancel_flag: tk.BooleanVar, log_var: tk.StringVar,
+             chunk_size: int = 1_000_000) -> BytesIO | None:
+    data: BytesIO = BytesIO()
+    current_size: int = 0
+    # todo: handle error codes
+    with request.urlopen(url, context=ssl.SSLContext()) as resp:
+        while True:
+            if cancel_flag.get():
+                return None
+
+            buffer: bytes | None = resp.read(chunk_size)
+            if not buffer:
+                break
+            data.write(buffer)
+            current_size += len(buffer)
+            log_var.set('Downloading... (%d%%)' % percent_done(current_size, target_size))
+        return data

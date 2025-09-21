@@ -1,165 +1,159 @@
-import math
-from collections.abc import Callable
-import internetarchive as ia
-import re
-from threading import Thread
 import tkinter as tk
-from tkinter import filedialog, font
 import webbrowser
-from zipfile import ZipFile
+from collections.abc import Callable
+from tkinter import ttk
 
-import iatalker
-from theme import theme
+import backend
+import util
 
+# constants
+PAD_X: int | tuple[int, int] = (10, 0)
+PAD_Y: int | tuple[int, int] = 4
+IPAD_X: int = 75
 
-def friendly_size(size_bytes : int) -> str:
-    if size_bytes == 0:
-        return '0 B'
-    sizes : tuple[str, str, str, str, str] = ('B', 'KiB', 'MiB', 'GiB', 'TiB')
-    index : int = int(math.floor(math.log(size_bytes, 1_024)))
-    prefix : str = round(size_bytes / (1_204 ** index), 2)
-    return '%s %s' % (prefix, sizes[index])
+# constructors
+root: tk.Tk = tk.Tk()
 
+sv_newsgroup: tk.StringVar = tk.StringVar()
+entry_newsgroup: ttk.Entry = ttk.Entry(root, textvariable=sv_newsgroup)
 
-def fix_mbox(data : str) -> str:
-    return re.sub(r'\nDate: ([0-9]{4})/([0-9]{2})/([0-9]{2})\n', r'\nDate: \2-\3-\1\n', data)
+btn_verify: ttk.Button = ttk.Button(root, text='Verify')
 
+sv_filepath: tk.StringVar = tk.StringVar()
+entry_filepath: ttk.Entry = ttk.Entry(root, textvariable=sv_filepath)
 
-def new_hyperlink(root_window : tk.Tk, text : str, url : str) -> tk.Label:
-    label : tk.Label = tk.Label(master=root_window, text=text, fg=theme.hyperlink, cursor='hand2')
-    ul_font : font.Font = font.Font(label, label.cget('font'))
-    ul_font.configure(underline=True)
-    label.configure(font=ul_font)
-    label.bind('<Button-1>', lambda _: webbrowser.open_new_tab(url))
-    return label
+btn_browse: ttk.Button = ttk.Button(root, text='Browse')
 
+bv_fix_dates: tk.BooleanVar = tk.BooleanVar()
+chk_fix_dates: ttk.Checkbutton = ttk.Checkbutton(root, text='Fix dates (recommended)', variable=bv_fix_dates,
+                                                 onvalue=True, offvalue=False)
 
-def get_mbox(group : str, filepath : str, fix: Callable[[str], str] | None = None, progress_print : tk.StringVar | None = None) -> bool:
-    if len(filepath) == 0:
-        return False
-    file_ref : ia.File = iatalker.get_file_ref(group)
-    if not file_ref:
-        return False
-    fdl : iatalker.FileDownload = iatalker.FileDownload(file_ref)
-    fdl.download_async()
-    while not fdl.done:
-        if progress_print:
-            percent = int(fdl.progress() * 100.0)
-            progress_print.set('Downloading... (%d%%)' % percent)
-    if progress_print:
-        progress_print.set('Decompressing...')
-    with ZipFile(fdl) as z:
-        data : str = z.read(group + '.mbox').decode(encoding='utf-8')
-        with open(filepath, 'w', encoding='utf-8') as mbox:
-            if fix:
-                if progress_print:
-                    progress_print.set('Fixing...')
-                mbox.write(fix(data))
-            else:
-                mbox.write(data)
+sv_download: tk.StringVar = tk.StringVar()
+btn_download: ttk.Button = ttk.Button(root, textvariable=sv_download)
 
-            if progress_print:
-                progress_print.set('Done.')
-            return True
+sv_log: tk.StringVar = tk.StringVar()
 
+label_dev_link: ttk.Label = util.new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
 
-root : tk.Tk = tk.Tk()
+label_ia_link: ttk.Label = util.new_hyperlink(root, 'Powered by the IA', 'https://archive.org/details/usenethistorical')
 
-sv_newsgroup : tk.StringVar = tk.StringVar()
-entry_newsgroup : tk.Entry = tk.Entry(root, textvariable=sv_newsgroup)
+img_icon: tk.PhotoImage = tk.PhotoImage(file=util.get_resource('tunic_logo.png'))
 
-button_verify : tk.Button = tk.Button(root, text='Verify')
+bv_cancel: tk.BooleanVar = tk.BooleanVar()
+bv_cancel.set(False)
 
-sv_filepath : tk.StringVar = tk.StringVar()
-entry_filepath : tk.Entry = tk.Entry(root, textvariable=sv_filepath)
+# callbacks
+cb_allow_buttons: Callable[[str, str, str], None] = backend.build_cb_allow_buttons(group_var=sv_newsgroup,
+                                                                                   filepath_var=sv_filepath,
+                                                                                   verify=btn_verify,
+                                                                                   download=btn_download)
 
-button_filepick : tk.Button = tk.Button(root, text='Browse')
+cb_verify_group: Callable[[], None] = lambda: backend.build_cb_verify_group(group_var=sv_newsgroup, log_var=sv_log)
 
-button_download : tk.Button = tk.Button(root, text='Download', state=tk.DISABLED)
+cb_select_file: Callable[[], None] = lambda: backend.build_cb_select_file(group_var=sv_newsgroup,
+                                                                          filepath_var=sv_filepath)
 
-sv_status : tk.StringVar = tk.StringVar()
+cb_download: Callable[[], None] = lambda: backend.build_cb_download(group_var=sv_newsgroup, filepath_var=sv_filepath,
+                                                                    log_var=sv_log, fix_flag=bv_fix_dates,
+                                                                    cancel_flag=bv_cancel,
+                                                                    download_btn_text_var=sv_download,
+                                                                    disable_while_dl=[btn_verify, btn_browse,
+                                                                                      chk_fix_dates])
 
-label_link : tk.Label = new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
-
-
-def cb_allow_buttons(_read : str, _write : str, _unset : str) -> None:
-    ng_size : int = len(sv_newsgroup.get())
-    if ng_size > 0:
-        button_verify.configure(state=tk.ACTIVE)
-    else:
-        button_verify.configure(state=tk.DISABLED)
-
-    if ng_size > 0 and len(sv_filepath.get()) > 0:
-        button_download.configure(state=tk.ACTIVE)
-    else:
-        button_download.configure(state=tk.DISABLED)
-
-
-def cb_verify_group() -> None:
-    group : str = sv_newsgroup.get()
-    file_ref : ia.File = iatalker.get_file_ref(group)
-    if file_ref:
-        sv_status.set('Verified %s on the Internet Archive (%s).' % (group, friendly_size(int(file_ref.metadata['size']))))
-    else:
-        sv_status.set('Could not find newsgroup %s on the Internet Archive.' % group)
-
-
-def cb_select_file() -> None:
-    group : str = sv_newsgroup.get()
-    default_name : str | None = '%s.mbox' % group if group else None
-    filename : str = filedialog.asksaveasfilename(defaultextension='.mbox', filetypes=[('MBOX', '*.mbox'), ('All Files', '*.*')], initialfile=default_name)
-    if filename:
-        sv_filepath.set(filename)
-
-
-def t_download() -> None:
-    newsgroup : str = sv_newsgroup.get()
-    filepath : str = sv_filepath.get()
-    button_verify.configure(state=tk.DISABLED)
-    button_download.configure(state=tk.DISABLED)
-    if not get_mbox(group=newsgroup, filepath=filepath, fix=fix_mbox, progress_print=sv_status):
-        sv_status.set('An error has occurred.')
-    button_verify.configure(state=tk.ACTIVE)
-    button_download.configure(state=tk.ACTIVE)
-
-
-def cb_download() -> None:
-    Thread(target=t_download).start()
-
+# placement
+if util.get_os != util.OS.MAC:
+    root.iconbitmap(util.get_resource('tunic_logo.ico'))
 
 root.wm_title('TUNIC: Thunderbird Usenet Newsgroup Import Converter')
 root.wm_minsize(width=600, height=200)
 
-tk.Label(root, text='Newsgroup Name').grid(row=0, sticky=tk.E, pady=4)
+ttk.Label(root, text='Newsgroup Name').grid(row=0, column=0, sticky=tk.E, pady=PAD_Y, padx=PAD_X)
 
 sv_newsgroup.trace_add(mode='write', callback=cb_allow_buttons)
-sv_newsgroup.set('rec.arts.anime')
+sv_newsgroup.set(value='rec.arts.anime')
 
-entry_newsgroup.grid(row=0, column=1, ipadx=75)
+entry_newsgroup.grid(row=0, column=1, ipadx=IPAD_X)
 
-button_verify.configure(command=cb_verify_group)
-button_verify.grid(row=0, column=2, sticky=tk.W, pady=4)
+btn_verify.configure(command=cb_verify_group)
+btn_verify.grid(row=0, column=2, sticky=tk.W, pady=PAD_Y)
 
-tk.Label(root, text='Output MBOX').grid(row=1, sticky=tk.E, pady=4)
+ttk.Label(root, text='Output MBOX').grid(row=1, column=0, sticky=tk.E, pady=PAD_Y, padx=PAD_X)
 
 sv_filepath.trace_add(mode='write', callback=cb_allow_buttons)
 
-entry_filepath.grid(row=1, column=1, ipadx=75)
+entry_filepath.grid(row=1, column=1, ipadx=IPAD_X)
 
-button_filepick.configure(command=cb_select_file)
-button_filepick.grid(row=1, column=2, sticky=tk.W, pady=4)
+btn_browse.configure(command=cb_select_file)
+btn_browse.grid(row=1, column=2, sticky=tk.W, pady=PAD_Y)
 
-button_download.configure(command=cb_download)
-button_download.grid(row=2, column=1, pady=4)
+bv_fix_dates.set(True)
+chk_fix_dates.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=PAD_Y, padx=PAD_X)
 
-sv_status.set('')
-tk.Label(root, textvariable=sv_status).grid(row=3, columnspan=4)
+sv_download.set('Download')
+btn_download.configure(state=tk.DISABLED)
 
-label_link.grid(row=4, column=1)
+btn_download.configure(command=cb_download)
+btn_download.grid(row=3, column=1, pady=PAD_Y)
+
+sv_log.set('')
+ttk.Label(root, textvariable=sv_log).grid(row=4, column=0, columnspan=4)
+
+label_dev_link.grid(row=5, column=0)
+label_ia_link.grid(row=5, column=2)
+
+
+# Menus
+def cb_aboutbox() -> None:
+    about: tk.Toplevel = tk.Toplevel(root)
+    about.title('About TUNIC')
+    about.geometry('250x200')
+    ttk.Label(about, image=img_icon).pack(pady=10)
+    ttk.Label(about, text='TUNIC v' + util.VERSION_NUM).pack(pady=10)
+    util.new_hyperlink(root=about, text='Home Page', url=util.HOMEPAGE).pack(pady=10)
+
+
+def cb_help() -> None:
+    webbrowser.open_new_tab(util.HOMEPAGE)
+
+
+menu_root: tk.Menu = tk.Menu(root)
+
+menu_file: tk.Menu = tk.Menu(menu_root, tearoff=0)
+menu_help: tk.Menu = tk.Menu(menu_root, tearoff=0)
+if util.get_os() == util.OS.MAC:
+    root.createcommand('tkAboutDialog', cb_aboutbox)
+    menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Cmd+Y')
+    root.bind_all('<Command-y>', lambda _: cb_verify_group())
+    menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Cmd+S')
+    root.bind_all('<Command-s>', lambda _: cb_select_file())
+    menu_file.add_command(label='Start Download', command=cb_download, accelerator='Cmd+D')
+    root.bind_all('<Command-d>', lambda _: cb_download())
+
+    menu_help.add_command(label='Documentation...', command=cb_help, accelerator='Cmd+Shift+H')
+    root.bind_all('<Command-H>', lambda _: cb_help())
+else:
+    menu_file.add_command(label='Verify', command=cb_verify_group, accelerator='Ctrl+Y')
+    root.bind_all('<Control-y>', lambda _: cb_verify_group())
+    menu_file.add_command(label='Output as...', command=cb_select_file, accelerator='Ctrl+S')
+    root.bind_all('<Control-s>', lambda _: cb_select_file())
+    menu_file.add_command(label='Start Download', command=cb_download, accelerator='Ctrl+D')
+    root.bind_all('<Control-d>', lambda _: cb_download())
+    menu_file.add_separator()
+    menu_file.add_command(label='Exit', command=lambda: exit(), accelerator='Ctrl+Q')
+    root.bind_all('<Control-q>', lambda _: exit())
+
+    menu_help.add_command(label='About TUNIC', command=cb_aboutbox)
+    menu_help.add_separator()
+    menu_help.add_command(label='Documentation...', command=cb_help,
+                          accelerator='F1')
+    root.bind_all('<F1>', lambda _: cb_help())
+menu_root.add_cascade(label='File', menu=menu_file)
+menu_root.add_cascade(label='Help', menu=menu_help)
+root.config(menu=menu_root)
 
 
 def main() -> None:
-    root.focus()
+    root.focus_force()
     root.mainloop()
 
 
