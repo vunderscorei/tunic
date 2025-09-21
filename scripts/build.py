@@ -13,7 +13,7 @@ VERSION_STR : str = '%d.%d.%d.%d' % (VERSION[0], VERSION[1], VERSION[2], VERSION
 PY_FILES : list[str] = [
     str(PROJECT_ROOT / 'tunic' / 'backend.py'),
     str(PROJECT_ROOT / 'tunic' / 'iatalker.py'),
-    str(PROJECT_ROOT / 'tunic' / 'theme.py'),
+    str(PROJECT_ROOT / 'tunic' / 'tunicui.py'),
     str(PROJECT_ROOT / 'tunic' / 'util.py')
 ]
 
