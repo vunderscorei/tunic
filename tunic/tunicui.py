@@ -103,7 +103,7 @@ def cb_aboutbox() -> None:
     about.geometry('250x200')
     ttk.Label(about, image=img_icon).pack(pady=10)
     ttk.Label(about, text='TUNIC v' + util.VERSION_NUM).pack(pady=10)
-    util.new_hyperlink(root=about, text='HomePage', url=util.HOMEPAGE).pack(pady=10)
+    util.new_hyperlink(root=about, text='Home Page', url=util.HOMEPAGE).pack(pady=10)
 
 
 def cb_help() -> None:
