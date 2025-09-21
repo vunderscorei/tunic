@@ -33,7 +33,9 @@ btn_download: ttk.Button = ttk.Button(root, textvariable=sv_download)
 
 sv_log: tk.StringVar = tk.StringVar()
 
-label_link: ttk.Label = util.new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
+label_dev_link: ttk.Label = util.new_hyperlink(root, 'Made by vi', 'https://v-i.dev')
+
+label_ia_link: ttk.Label = util.new_hyperlink(root, 'Powered by the IA', 'https://archive.org/details/usenethistorical')
 
 img_icon: tk.PhotoImage = tk.PhotoImage(file=util.get_resource('tunic_logo.png'))
 
@@ -96,7 +98,8 @@ btn_download.grid(row=3, column=1, pady=PAD_Y)
 sv_log.set('')
 ttk.Label(root, textvariable=sv_log).grid(row=4, column=0, columnspan=4)
 
-label_link.grid(row=5, column=1)
+label_dev_link.grid(row=5, column=0)
+label_ia_link.grid(row=5, column=2)
 
 
 # Menus
