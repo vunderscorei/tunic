@@ -8,6 +8,8 @@ Currently in development, and may be buggy.
 
 [__CLICK HERE TO DOWNLOAD__](https://github.com/vunderscorei/tunic/releases)
 
+[__CLICK HERE FOR USAGE INSTRUCTIONS__](https://github.com/vunderscorei/tunic/wiki/Setting-up-Thunderbird)
+
 ---
 
 __BUILDING:__
