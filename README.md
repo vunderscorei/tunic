@@ -62,6 +62,11 @@ __FREQUENTLY ASKED QUESTIONS:__
 - ***How complete are the Usenet archives used by TUNIC? Does it pull from Google Groups?***
     - Due to the exact way in which Usenet is distributed, it is impossible to tell the exact number of posts that have been made, especially in the earlier years. TUNIC relies entirely upon the [Usenet Historical Collection](https://archive.org/details/usenethistorical), a massive dump given to the Internet Archive which does include anything newer than late 2013. It appears to go as far back as 1984 or 1985, but early archiving seems spotty. Google Groups, one of the only other large-scale historic Usenet archives, has significantly more posts from these early years, but are unfortunately not used by TUNIC. The Usenet archive section of Google Groups has been languishing for more than a decade, and the API to interface with it is completely broken. There have been some attempts to scape posts from it, but those are beyond the scope of TUNIC, which has the goal of just reading wha has already been collected.
 
+__FUTURE GOALS:__
+- Browsable list of downloadable newsgroups
+- Bulk download of multiple groups
+- Thunderbird guide integrated into application
+  
 __KNOWN ISSUES:__
 - Program may crash if the download is stopped server-side for any reason.
 - Light/Dark mode detect doesn't work correctly on Windows.
@@ -70,6 +75,5 @@ __KNOWN ISSUES:__
 - The app icon is awful.
 - Occasionally quitting the app on Windows leads to a zombie background task.
 - The entire UI is off-center and really ugly.
-- No instructions on how to actually import the downloaded MBOX files into Thunderbird have been prepared.
 - Zero testing has been done on Linux.
 - Linux should support single-executable mode, but this has not been configured.
