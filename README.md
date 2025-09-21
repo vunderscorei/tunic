@@ -6,6 +6,10 @@ A cross-platform tool for downloading and converting Usenet MBOX files from the 
 
 Currently in development, and may be buggy.
 
+<img width="604" height="231" alt="tunic_example" src="https://github.com/user-attachments/assets/d8ed140e-3bdb-4ea3-9ec1-2d25d834f5ee" />
+
+---
+
 [__CLICK HERE TO DOWNLOAD__](https://github.com/vunderscorei/tunic/releases)
 
 [__CLICK HERE FOR USAGE INSTRUCTIONS__](https://github.com/vunderscorei/tunic/wiki/Setting-up-Thunderbird)
