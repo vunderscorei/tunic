@@ -40,7 +40,7 @@ In 2013, a "generous donor" donated a massive archive of Usenet newsgroups going
 
 As such, the job of TUNIC can be broken into four parts.
  - Read in a specific newsgroup from the user
- - Locate and download the associated MBOX via the [interentarchive](https://archive.org/developers/internetarchive/) python library
+ - Locate and download the associated MBOX from the Internet Archive
  - Convert all metadata dates to the `MM-dd-YYYY` format while careful not to modify any message bodies
  - Save the converted MBOX file to disk and alert the user the download has finished.
 
